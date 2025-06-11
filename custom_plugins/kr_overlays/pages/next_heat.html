@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="RotorHazard">
+    <meta name="google" content="notranslate">
+    <title>Next Heat</title>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="/static/jquery-3.6.4/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript" src="/static/articulate/articulate.min.js"></script>
+    <script type="text/javascript" src="/static/socket.io-4.6.1/socket.io.min.js"></script>
+    <script type="text/javascript" src="/static/smoothie/smoothie.js"></script>
+    <script type="text/javascript" src="/static/magnific-1.1.0/magnific-inline-min.js"></script>
+    <script type="text/javascript" src="/static/svgasset.js"></script>
+    <script type="text/javascript" src="/static/rotorhazard.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/kr_overlays/static/css/overlays.css">
+    </link>
+
+    <!-- Child template head content -->
+
+</head>
+
+<body>
+
+    <script type="text/javascript" charset="utf-8" src="/kr_overlays/static/js/overlays.js"></script>
+
+    <script type="text/javascript" charset="utf-8">
+
+        var data_dependencies = [
+            'all_languages',
+            'language',
+            'pilot_data',
+            'result_data',
+            'heat_data',
+            'class_data',
+            'leaderboard',
+            'race_status',
+            'frequency_data'
+        ];
+
+        rotorhazard.show_messages = false;
+
+        var pilot_data;
+        var race_data;
+        var heat_data;
+        var class_data;
+
+        $(document).ready(function () {
+            // get pi time
+            rotorhazard.pi_time_request = window.performance.now();
+
+            // set up node local store
+            for (i = 0; i < {{ num_nodes }}; i++) {
+            rotorhazard.nodes[i] = new nodeModel();
+        }
+
+        socket.emit('get_pi_time');
+
+        socket.on('language', default_handler['language']);
+
+        socket.on('race_scheduled', default_handler['race_scheduled']);
+
+        socket.on('pilot_data', function (msg) {
+            rotorhazard.event.pilot_attributes = msg.attributes;
+            rotorhazard.event.pilots = msg.pilots;
+            rotorhazard.options.pilotSort = msg.pilotSort;
+            pilot_data = msg.pilots;
+        });
+
+        socket.on('result_data', function (msg) {
+            race_data = msg;
+        });
+
+        socket.on('heat_data', function (msg) {
+            heat_data = msg;
+        });
+
+        socket.on('class_data', function (msg) {
+            class_data = msg.classes;
+        });
+
+        socket.on('heartbeat', default_handler['heartbeat']);
+
+        socket.on('frequency_data', function (msg) {
+            if (msg.fdata.length) {
+                for (var i in msg.fdata) {
+                    var fObj = freq.getFObjbyFData(msg.fdata[i]);
+                    rotorhazard.nodes[i].fObj = fObj;
+                    freq.updateBlock(fObj, i);
+                }
+            }
+        });
+
+        socket.on('leaderboard', function (msg) {
+            var race = msg.current;
+
+            var nextRace = heat_data.heats.find(({ id }) => id === race.heat + 1);
+            if (!nextRace) {
+                nextRace = heat_data.heats.find(({ id }) => id === race.heat);
+            }
+
+            $('.curr_heat_title').html(nextRace.displayname);
+
+            $('#nextheat_pilot_box').empty();
+            build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
+            freq.updateBlocks();
+        });
+
+        socket.on('prestage_ready', default_handler['prestage_ready']);
+
+        socket.on('stage_ready', default_handler['stage_ready']);
+
+        socket.on('stop_timer', default_handler['stop_timer']);
+    });
+
+    </script>
+
+    <main class="page-stream">
+
+        <div id="nextheat">
+
+            <div id="nextheat_title">
+                Next Heat:
+            </div>
+
+            <div id="title">
+                <span class="curr_heat_title"></span>
+                <span class="curr_event_name">{{ getOption('eventName') }}</span>
+            </div>
+
+            <div id="nextheat_pilot_box" class="nextheat_pilot_box">
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

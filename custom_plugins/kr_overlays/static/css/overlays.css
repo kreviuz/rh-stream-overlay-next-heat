@@ -1,0 +1,65 @@
+/* General */
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: teko, Arial, Helvetica, sans-serif;
+}
+
+#nextheat {
+    background-color: #000000DC;
+    border-radius: 16px;
+    color: #fff;
+}
+
+#nextheat #nextheat_title {
+    font-size: 56px;
+    font-weight: 800;
+    /*color: #013e77;*/
+    padding: 20px 0 0 0;
+    text-align: center;
+    font-family: teko, Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+}
+
+#nextheat .curr_heat_title {
+    font-family: teko, Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+#nextheat #title {
+    font-size: 42px;
+    font-weight: 400;
+    padding: 12px 0 42px 0;
+    text-align: center;
+}
+
+#nextheat .curr_event_name {
+    font-family: teko, Arial, Helvetica, sans-serif;
+}
+.nextheat_pilot_box{
+    display: table;
+    margin: 0 auto;
+    padding-bottom: 50px;
+}
+
+.nextheat_pilot {
+    display: table-row;
+    font-size: 20px;
+}
+
+.nextheat_pilot_name {
+    display: table-cell;
+}
+
+.nextheat_pilot_name {
+    display: table-cell;
+    padding-right: 10px;
+}
+
+.channel-block {
+    display: table-cell;
+}
