@@ -105,7 +105,7 @@
                 nextRace = heat_data.heats.find(({ id }) => id === race.heat);
             }
 
-            var nextRoundNum = nextRace.next_round + 2;
+            var nextRoundNum = nextRace.next_round + 1;
 
             $('.curr_heat_title').html(nextRace.displayname + " Round " + nextRoundNum);
 
