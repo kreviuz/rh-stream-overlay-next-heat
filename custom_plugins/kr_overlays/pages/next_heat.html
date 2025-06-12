@@ -105,7 +105,9 @@
                 nextRace = heat_data.heats.find(({ id }) => id === race.heat);
             }
 
-            $('.curr_heat_title').html(nextRace.displayname + " Round " + (nextRace.next_round + 1));
+            var nextRoundNum = nextRace.next_round + 2;
+
+            $('.curr_heat_title').html(nextRace.displayname + " Round " + nextRoundNum);
 
             $('#nextheat_pilot_box').empty();
             build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
