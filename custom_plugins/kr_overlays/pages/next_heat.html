@@ -105,7 +105,7 @@
                 nextRace = heat_data.heats.find(({ id }) => id === race.heat);
             }
 
-            $('.curr_heat_title').html(nextRace.displayname);
+            $('.curr_heat_title').html(nextRace.displayname + " Round " + (nextRace.next_round + 1));
 
             $('#nextheat_pilot_box').empty();
             build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
@@ -131,7 +131,6 @@
 
             <div id="title">
                 <span class="curr_heat_title"></span>
-                <span class="curr_event_name">{{ getOption('eventName') }}</span>
             </div>
 
             <div id="nextheat_pilot_box" class="nextheat_pilot_box">
