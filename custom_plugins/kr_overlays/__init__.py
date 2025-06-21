@@ -1,7 +1,6 @@
 '''Kreviuz Overlays Plugin'''
 
 import logging
-from src.server.RHAPI import RHAPI
 
 logger = logging.getLogger(__name__)
 # import RHUtils
