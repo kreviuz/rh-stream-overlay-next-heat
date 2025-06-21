@@ -9,6 +9,7 @@ import json
 from RHUI import UIField, UIFieldType, UIFieldSelectOption
 
 import requests
+import Database
 from flask import templating
 from flask.blueprints import Blueprint
 
@@ -30,7 +31,23 @@ def initialize(rhapi):
                                           )
 
     def get_next_heat(heat_id):
-        next_heat_id = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, False)
+        regen_heat = False
+        heat = rhapi.db.heat_by_id(rhapi.race.heat)
+        if heat.class_id:
+            raceclass = rhapi.db.raceclass_by_id(heat.class_id)
+            if raceclass.round_type == 1:
+                if raceclass.rounds == 0 or heat.group_id + 1 < raceclass.rounds:
+                    # Regenerate to new heat + group
+                    regen_heat = Database.Heat(
+                        name=heat.name,
+                        class_id=heat.class_id,
+                        group_id=heat.group_id + 1,
+                        results=None,
+                        status=0,
+                        auto_frequency=heat.auto_frequency
+                    )
+
+        next_heat_id = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, regen_heat)
         broadcast_next_heat(next_heat_id)
 
     def broadcast_next_heat(next_heat_id):
