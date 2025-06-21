@@ -1,6 +1,8 @@
 '''Kreviuz Overlays Plugin'''
 
 import logging
+from src.server.RHAPI import RHAPI
+
 logger = logging.getLogger(__name__)
 #import RHUtils
 import json
@@ -11,8 +13,8 @@ import requests
 from flask import templating
 from flask.blueprints import Blueprint
 
-def initialize(rhapi):
 
+def initialize(rhapi):
     bp = Blueprint(
         'kr_overlays',
         __name__,
@@ -23,8 +25,18 @@ def initialize(rhapi):
 
     @bp.route('/kr_overlays/next_heat')
     def kr_overlays_streamNextUp():
-        return templating.render_template('next_heat.html', serverInfo=None, getOption=rhapi.db.option, __=rhapi.__, DEBUG=False, num_nodes=8
-        )
+        rhapi.ui.socket_listen('get_next_heat', get_next_heat)
+        return templating.render_template('next_heat.html', serverInfo=None, getOption=rhapi.db.option, __=rhapi.__,
+                                          DEBUG=False, num_nodes=8
+                                          )
+
+    def get_next_heat(heat_id):
+        next_heat = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, False)
+        broadcast_next_heat(next_heat)
+
+    def broadcast_next_heat(next_heat):
+        rhapi.ui.broadcast_heats()
+        rhapi._racecontext.rhui._socket.emit('next_heat_data', next_heat)
 
     rhapi.ui.blueprint_add(bp)
 

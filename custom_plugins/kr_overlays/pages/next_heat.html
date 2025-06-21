@@ -97,13 +97,8 @@
             }
         });
 
-        socket.on('leaderboard', function (msg) {
-            var race = msg.current;
-
-            var nextRace = heat_data.heats.find(({ id }) => id === race.heat + 1);
-            if (!nextRace) {
-                nextRace = heat_data.heats.find(({ id }) => id === race.heat);
-            }
+        socket.on('next_heat_data', function (next_heat_id) {
+            var nextRace = heat_data.heats.find(({ id }) => id === next_heat_id);
 
             var nextRoundNum = nextRace.next_round + 1;
 
@@ -112,6 +107,12 @@
             $('#nextheat_pilot_box').empty();
             build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
             freq.updateBlocks();
+        });
+
+        socket.on('leaderboard', function (msg) {
+            var race = msg.current;
+
+            socket.emit('get_next_heat', race.heat);
         });
 
         socket.on('prestage_ready', default_handler['prestage_ready']);

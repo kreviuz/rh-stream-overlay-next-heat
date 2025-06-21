@@ -72,7 +72,7 @@ default_handler = {
     },
     
     'stage_ready': function (msg) {
-        race_kickoff(msg);
+        //race_kickoff(msg);
     },
     
     'stop_timer': function (msg) {
