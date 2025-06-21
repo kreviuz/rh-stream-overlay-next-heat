@@ -4,7 +4,7 @@ import logging
 from src.server.RHAPI import RHAPI
 
 logger = logging.getLogger(__name__)
-#import RHUtils
+# import RHUtils
 import json
 
 from RHUI import UIField, UIFieldType, UIFieldSelectOption
@@ -31,12 +31,12 @@ def initialize(rhapi):
                                           )
 
     def get_next_heat(heat_id):
-        next_heat = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, False)
-        broadcast_next_heat(next_heat)
+        next_heat_id = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, False)
+        broadcast_next_heat(next_heat_id)
 
-    def broadcast_next_heat(next_heat):
+    def broadcast_next_heat(next_heat_id):
         rhapi.ui.broadcast_heats()
-        rhapi._racecontext.rhui._socket.emit('next_heat_data', next_heat)
+        rhapi.ui.socket_broadcast('next_heat_data', next_heat_id)
 
     rhapi.ui.blueprint_add(bp)
 
