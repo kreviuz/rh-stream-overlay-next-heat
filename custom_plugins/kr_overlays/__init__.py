@@ -38,14 +38,8 @@ def initialize(rhapi):
             if raceclass.round_type == 1:
                 if raceclass.rounds == 0 or heat.group_id + 1 < raceclass.rounds:
                     # Regenerate to new heat + group
-                    regen_heat = Database.Heat(
-                        name=heat.name,
-                        class_id=heat.class_id,
-                        group_id=heat.group_id + 1,
-                        results=None,
-                        status=0,
-                        auto_frequency=heat.auto_frequency
-                    )
+                    broadcast_next_heat(heat_id)
+                    return
 
         next_heat_id = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, regen_heat)
         broadcast_next_heat(next_heat_id)
