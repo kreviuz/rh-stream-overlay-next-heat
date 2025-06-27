@@ -105,7 +105,7 @@
                 if (nextRace) {
                     var nextRoundNum = nextRace.next_round + 1;
 
-                    $('.curr_heat_title').html(nextRace.displayname + " Round " + nextRoundNum + " | ");
+                    $('.curr_heat_title').html(nextRace.displayname + " Round " + nextRoundNum);
                     build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
                     freq.updateBlocks();
                 }
