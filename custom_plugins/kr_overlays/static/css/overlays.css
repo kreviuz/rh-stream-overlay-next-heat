@@ -9,57 +9,55 @@ h5 {
 }
 
 #nextheat {
-    background-color: #000000DC;
-    border-radius: 16px;
+    font-family: 'Barlow', sans-serif;
+    background-color: #000000;
+    font-weight: 800;
+    border-radius: 20px 0 20px 0;
     color: #fff;
+    font-size: 2em;
+    padding: 20px;
 }
 
 #nextheat #nextheat_title {
-    font-size: 56px;
-    font-weight: 800;
     /*color: #013e77;*/
-    padding: 20px 0 0 0;
+    display: inline;
     text-align: center;
-    font-family: teko, Arial, Helvetica, sans-serif;
     text-transform: uppercase;
+}
+
+#nextheat .nextheat_name {
+    display: inline;
 }
 
 #nextheat .curr_heat_title {
     font-family: teko, Arial, Helvetica, sans-serif;
     font-weight: 600;
     text-transform: uppercase;
-}
-
-#nextheat #title {
-    font-size: 42px;
-    font-weight: 400;
-    padding: 12px 0 42px 0;
-    text-align: center;
+    display: inline;
 }
 
 #nextheat .curr_event_name {
-    font-family: teko, Arial, Helvetica, sans-serif;
+    display: inline;
 }
 .nextheat_pilot_box{
-    display: table;
+    display: inline;
     margin: 0 auto;
     padding-bottom: 50px;
 }
 
 .nextheat_pilot {
-    display: table-row;
-    font-size: 20px;
+    display: inline;
 }
 
 .nextheat_pilot_name {
-    display: table-cell;
+    display: inline;
 }
 
 .nextheat_pilot_name {
-    display: table-cell;
+    display: inline;
     padding-right: 10px;
 }
 
 .channel-block {
-    display: table-cell;
+    display: inline;
 }

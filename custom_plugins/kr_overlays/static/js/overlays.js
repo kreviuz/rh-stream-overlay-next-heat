@@ -141,8 +141,8 @@ function build_nextheat(nextheat, nodes, pilots) {
         let pilot_name = pilot.callsign;
         let pilot_node_index = nextheat.slots[i].node_index;
         let html = $('<div class="nextheat_pilot">');
-        html.append('<div class="nextheat_pilot_name">' + pilot_name + '</div></div>');
-        html.append('<div class="channel-block" data-node="' + pilot_node_index + '"><span class="ch"></span></div>');
+        html.append('<div class="nextheat_pilot_name">' + pilot_name + ' -' + '</div></div>');
+        html.append('<div class="channel-block" data-node="' + pilot_node_index + '"><span class="ch"></span></div><span> | </span>');
 
         $('#nextheat_pilot_box').append(html);
         }

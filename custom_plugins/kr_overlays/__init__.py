@@ -42,11 +42,15 @@ def initialize(rhapi):
                     return
 
         next_heat_id = rhapi._racecontext.rhdata.get_next_heat_id(heat_id, regen_heat)
-        broadcast_next_heat(next_heat_id)
+        result = rhapi._racecontext.heatautomator.calc_heat(next_heat_id, True)
+        displayempty = False
+        if result == 'no-heat':
+            displayempty = True
+        broadcast_next_heat(next_heat_id, displayempty)
 
-    def broadcast_next_heat(next_heat_id):
+    def broadcast_next_heat(next_heat_id, displayempty):
         rhapi.ui.broadcast_heats()
-        rhapi.ui.socket_broadcast('next_heat_data', next_heat_id)
+        rhapi.ui.socket_broadcast('next_heat_data', {'displayEmpty': displayempty, 'nextHeatId': next_heat_id})
 
     rhapi.ui.blueprint_add(bp)
 

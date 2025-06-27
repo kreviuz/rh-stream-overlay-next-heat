@@ -97,16 +97,18 @@
             }
         });
 
-        socket.on('next_heat_data', function (next_heat_id) {
-            var nextRace = heat_data.heats.find(({ id }) => id === next_heat_id);
+        socket.on('next_heat_data', function (next_heat_data) {
             $('#nextheat_pilot_box').empty();
+            if(!next_heat_data.displayEmpty) {
+                var nextRace = heat_data.heats.find(({id}) => id === next_heat_data.nextHeatId);
 
-            if (nextRace) {
-                var nextRoundNum = nextRace.next_round + 1;
+                if (nextRace) {
+                    var nextRoundNum = nextRace.next_round + 1;
 
-                $('.curr_heat_title').html(nextRace.displayname + " Round " + nextRoundNum);
-                build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
-                freq.updateBlocks();
+                    $('.curr_heat_title').html(nextRace.displayname + " Round " + nextRoundNum + " | ");
+                    build_nextheat(nextRace, rotorhazard.nodes, pilot_data);
+                    freq.updateBlocks();
+                }
             }
         });
 
@@ -130,10 +132,10 @@
         <div id="nextheat">
 
             <div id="nextheat_title">
-                Next Heat:
+                Next:
             </div>
 
-            <div id="title">
+            <div class="nextheat_name">
                 <span class="curr_heat_title"></span>
             </div>
 
