@@ -30,6 +30,13 @@ def initialize(rhapi):
                                           DEBUG=False, num_nodes=8
                                           )
 
+    @bp.route('/kr_overlays/brackets/<string:bracket_type>/<int:class_id>')
+    def ddr_overlays_streamBrackets(bracket_type, class_id):
+        return templating.render_template('brackets.html', serverInfo=None, getOption=rhapi.db.option,__=rhapi.__, DEBUG=False,
+            bracket_type=bracket_type, class_id=class_id, num_nodes=8
+        )
+
+
     def get_next_heat(heat_id):
         regen_heat = False
         heat = rhapi.db.heat_by_id(rhapi.race.heat)
@@ -55,4 +62,5 @@ def initialize(rhapi):
     rhapi.ui.blueprint_add(bp)
 
     rhapi.ui.register_panel("kr_overlays", "Kreviuz - OBS Overlays", "settings")
-    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays link", "- [Next Heat](/kr_overlays/next_heat)")
+    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays NextHeat link", "- [Next Heat](/kr_overlays/next_heat)")
+    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays Brackets link", "- [Brackets](/kr_overlays/brackets/multigp16/1)")
