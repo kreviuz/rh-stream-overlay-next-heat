@@ -247,6 +247,19 @@ function build_nextheat(nextheat, nodes, pilots) {
     }
 }
 
+function update_results_brackets(race_data) {
+    Object.keys(race_data.heats).forEach(heatId => {
+       var heat = race_data.heats[heatId];
+        for (let i = 0; i < heat.leaderboard.by_race_time.length; i++){
+            var pilot = heat.leaderboard.by_race_time[i];
+            var s = '[data-heat-id="'+ heat.heat_id +'"] [data-pilot-id="'+ pilot.pilot_id +'"]';
+            var divHeat = $('[data-heat-id="'+ heat.heat_id +'"]');
+            var divPilot = divHeat.find('[data-pilot-id="'+ pilot.pilot_id +'"]');
+            divPilot.html(i+1);
+        }
+    });
+}
+
 function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_data, ddr_heat_data, ddr_class_data, ddr_race_data) {
 
     // clear brackets
@@ -266,7 +279,7 @@ function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_
 
     for (let i = 0; i < elimination_heats.length; i++) {
         const heat = elimination_heats[i];
-        let html = '<div class="bracket_race">';
+        let html = '<div data-heat-id="'+ heat.id +'" class="bracket_race">';
         html += '<div class="bracket_race_title">' + heat.displayname + '</div>';
         html += '<div class="bracket_race_pilots">';
 
@@ -296,6 +309,8 @@ function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_
 
                 let pilot_node_index = slot.node_index;
                 html += '<div class="channel-block" data-node="'+ pilot_node_index +'"><span class="ch"></span></div>'
+
+                html += '<div data-pilot-id="' + pilot.pilot_id + '" class="pilot_position"></div>';
 
 
                 html += '</div>';
