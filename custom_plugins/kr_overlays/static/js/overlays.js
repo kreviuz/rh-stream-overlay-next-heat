@@ -248,15 +248,18 @@ function build_nextheat(nextheat, nodes, pilots) {
 }
 
 function update_results_brackets(race_data) {
+    $("[data-pilot-id]").empty();
     Object.keys(race_data.heats).forEach(heatId => {
        var heat = race_data.heats[heatId];
-        for (let i = 0; i < heat.leaderboard.by_race_time.length; i++){
-            var pilot = heat.leaderboard.by_race_time[i];
+       for(let roundId = 0; roundId < heat.rounds.length; roundId++){
+        for (let i = 0; i < heat.rounds[roundId].leaderboard.by_race_time.length; i++){
+            var pilot = heat.rounds[roundId].leaderboard.by_race_time[i];
             var s = '[data-heat-id="'+ heat.heat_id +'"] [data-pilot-id="'+ pilot.pilot_id +'"]';
             var divHeat = $('[data-heat-id="'+ heat.heat_id +'"]');
             var divPilot = divHeat.find('[data-pilot-id="'+ pilot.pilot_id +'"]');
-            divPilot.html(i+1);
+            divPilot.append('<span class="pilot-round-result">'+ (i+1) + '</span>');
         }
+       }
     });
 }
 

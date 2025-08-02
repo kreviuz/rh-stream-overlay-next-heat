@@ -73,6 +73,10 @@
     padding-top: 5px;
 }
 
+.bracket_race_pilot .pilot-round-result {
+    padding-left: 10px;
+}
+
 .bracket_race_pilot .no_pilot {
     font-size: 18px;
     font-weight: 200;
