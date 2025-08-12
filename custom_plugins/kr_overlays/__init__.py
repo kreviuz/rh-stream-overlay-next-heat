@@ -62,5 +62,11 @@ def initialize(rhapi):
     rhapi.ui.blueprint_add(bp)
 
     rhapi.ui.register_panel("kr_overlays", "Kreviuz - OBS Overlays", "settings")
-    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays NextHeat link", "- [Next Heat](/kr_overlays/next_heat)")
-    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays Brackets link", "- [Brackets](/kr_overlays/brackets/multigp16/1)")
+    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays NextHeat link",
+                               "- [Next Heat](/kr_overlays/next_heat)")
+    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays Brackets MultiGP 16 link",
+                               "- [Brackets - MultiGP 16](/kr_overlays/brackets/multigp16/1)")
+    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays Brackets 8 double link",
+                               "- [Brackets - 8 double](/kr_overlays/brackets/8double/1)")
+    rhapi.ui.register_markdown("kr_overlays", "Kreviuz Overlays Brackets FAI 16 single link",
+                               "- [Brackets - FAI 16 single](/kr_overlays/brackets/fai16single/1)")

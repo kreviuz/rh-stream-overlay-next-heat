@@ -162,6 +162,23 @@ const bracket_formats = {
                    new BracketHeat(13, "loser",       3, 14),
                    new BracketHeat(14, "winner",      3),
                  ],
+    "fai16single": [
+                   new BracketHeat(1,  "preliminary", 0, 5),
+                   new BracketHeat(2,  "preliminary", 0, 5),
+                   new BracketHeat(3,  "preliminary", 0, 6),
+                   new BracketHeat(4,  "preliminary", 0, 6),
+                   new BracketHeat(5,  "winner",      1, 7),
+                   new BracketHeat(6,  "winner",      1, 7),
+                   new BracketHeat(7,  "winner",       2),
+                 ],
+    "8double":  [
+                   new BracketHeat(1,  "preliminary", 0, 4),
+                   new BracketHeat(2,  "preliminary", 0, 4),
+                   new BracketHeat(3,  "loser", 0, 5),
+                   new BracketHeat(4,  "winner", 1, 6),
+                   new BracketHeat(5,  "loser",  1, 6),
+                   new BracketHeat(6,  "winner", 2),
+                 ],
     //"fai16":     [],
     //"fai16de":   [],
     //"fai32":     [],
@@ -329,6 +346,9 @@ function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_
         html += '</div>';
 
         if (bracket_formats[race_bracket_type] != undefined) {
+            if(race_bracket_type.indexOf("single") != -1){
+                $("#loser_bracket_title").hide();
+            }
             let bracket_heat_info = bracket_formats[race_bracket_type][i];
 
             if (bracket_heat_info.type == "winner" || bracket_heat_info.type == "preliminary") {
