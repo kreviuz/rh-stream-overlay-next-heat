@@ -102,7 +102,7 @@
             rotorhazard.event.pilot_attributes = msg.attributes;
             rotorhazard.event.pilots = msg.pilots;
             rotorhazard.options.pilotSort = msg.pilotSort;
-            ddr_pilot_data = msg.pilots;    
+            ddr_pilot_data = msg.pilots;
         });
 
         socket.on('class_data', function (msg) {
@@ -111,6 +111,8 @@
 
         socket.on('heat_data', function (msg) {
             ddr_heat_data = msg.heats;
+            build_elimination_brackets('{{ bracket_type }}', '{{ class_id }}', ddr_pilot_data, ddr_heat_data, ddr_class_data, ddr_race_data);
+            freq.updateBlocks();
         });
 
         socket.on('heartbeat', default_handler['heartbeat']);
