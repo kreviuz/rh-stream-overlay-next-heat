@@ -170,6 +170,7 @@ const bracket_formats = {
                    new BracketHeat(5,  "winner",      1, 7),
                    new BracketHeat(6,  "winner",      1, 7),
                    new BracketHeat(7,  "winner",       2),
+                   new BracketHeat(8,  "winner",       2),
                  ],
     "8double":  [
                    new BracketHeat(1,  "preliminary", 0, 4),
@@ -281,6 +282,11 @@ function update_results_brackets(race_data) {
 }
 
 function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_data, ddr_heat_data, ddr_class_data, ddr_race_data) {
+
+
+    if(!ddr_race_data) {
+        return;
+    }
 
     // clear brackets
     $('#winner_bracket_content').html('');

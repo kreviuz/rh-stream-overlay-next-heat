@@ -113,6 +113,7 @@
             ddr_heat_data = msg.heats;
             build_elimination_brackets('{{ bracket_type }}', '{{ class_id }}', ddr_pilot_data, ddr_heat_data, ddr_class_data, ddr_race_data);
             freq.updateBlocks();
+            update_results_brackets(ddr_race_data);
         });
 
         socket.on('heartbeat', default_handler['heartbeat']);
