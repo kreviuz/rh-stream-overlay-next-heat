@@ -266,6 +266,9 @@ function build_nextheat(nextheat, nodes, pilots) {
 }
 
 function update_results_brackets(race_data) {
+    if(!race_data) {
+        return;
+    }
     $("[data-pilot-id]").empty();
     Object.keys(race_data.heats).forEach(heatId => {
        var heat = race_data.heats[heatId];
