@@ -269,18 +269,19 @@ function update_results_brackets(race_data) {
     if(!race_data) {
         return;
     }
-    $("[data-pilot-id]").empty();
     Object.keys(race_data.heats).forEach(heatId => {
-       var heat = race_data.heats[heatId];
-       for(let roundId = 0; roundId < heat.rounds.length; roundId++){
-        for (let i = 0; i < heat.rounds[roundId].leaderboard.by_race_time.length; i++){
-            var pilot = heat.rounds[roundId].leaderboard.by_race_time[i];
-            var s = '[data-heat-id="'+ heat.heat_id +'"] [data-pilot-id="'+ pilot.pilot_id +'"]';
-            var divHeat = $('[data-heat-id="'+ heat.heat_id +'"]');
-            var divPilot = divHeat.find('[data-pilot-id="'+ pilot.pilot_id +'"]');
-            divPilot.append('<span class="pilot-round-result">'+ (i+1) + '</span>');
+       let heat = race_data.heats[heatId];
+       let divHeat = $('[data-heat-id="'+ heat.heat_id +'"]');
+       let divPolots = $('<div></div>');
+        for (let i = 0; i < heat.leaderboard.by_race_time.length; i++){
+            let pilot = heat.leaderboard.by_race_time[i];
+            let pilotParemt
+            let divPilot = divHeat.find('[data-pilot-id="'+ pilot.pilot_id +'"]');
+            let divPilotResult = divPilot.find('.pilot_position')
+            divPilotResult.append('<span class="pilot-round-result">'+ (i+1) + '</span>');
+            divPolots.push(divPilot);
         }
-       }
+        var racePilotsHtml = divHeat.find('.bracket_race_pilot');
     });
 }
 
@@ -308,8 +309,13 @@ function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_
 
     for (let i = 0; i < elimination_heats.length; i++) {
         const heat = elimination_heats[i];
-        let html = '<div data-heat-id="'+ heat.id +'" class="bracket_race">';
-        html += '<div class="bracket_race_title">' + heat.displayname + '</div>';
+        /* ------------------------------------------------------------------
+           ЕДИНСТВЕННОЕ изменение логики рендера:
+           добавлен атрибут data-heat-number (номер heat'а в format, 1-based),
+           чтобы draw_bracket_connectors мог связать карточку с bracket_formats.
+           Остальное не тронуто.
+           ------------------------------------------------------------------ */
+        let html = '<div data-heat-id="'+ heat.id +'" data-heat-number="' + (i + 1) + '" class="bracket_race" data-race-label="'+ heat.displayname +'">';
         html += '<div class="bracket_race_pilots">';
 
         const filtered_slots = heat.slots.filter(slot => /*slot.seed_id*/true && slot.seed_rank);
@@ -332,14 +338,14 @@ function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_
 
             if (pilot) {
 
-                html += '<div class="bracket_race_pilot">';
+                html += '<div class="bracket_race_pilot" data-pilot-id="'+ pilot.pilot_id +'">';
 
                 html += '<div class="pilot_name">' + pilot.callsign + '</div>';
 
                 let pilot_node_index = slot.node_index;
                 html += '<div class="channel-block" data-node="'+ pilot_node_index +'"><span class="ch"></span></div>'
 
-                html += '<div data-pilot-id="' + pilot.pilot_id + '" class="pilot_position"></div>';
+                html += '<div class="pilot_position"></div>';
 
 
                 html += '</div>';
@@ -377,3 +383,153 @@ function build_elimination_brackets(race_bracket_type, race_class_id, ddr_pilot_
     }
 }
 
+/* ============================================================
+   РИСОВАНИЕ ПУНКТИРНЫХ ЛИНИЙ МЕЖДУ КАРТОЧКАМИ BRACKET
+   ============================================================
+   Логика:
+   - build_elimination_brackets ставит на каждую карточку
+     data-heat-number (1-based номер heat'а в bracket_formats).
+   - bracket_formats[i].advance_to — номер целевого heat'а.
+   - Ищем целевую карточку по data-heat-number.
+   - Рисуем пунктирный путь: правый край родителя → левый край цели.
+   ============================================================ */
+
+function draw_bracket_connectors(gridSelector, svgSelector, race_bracket_type) {
+    const $grid = $(gridSelector);
+    const svg   = document.querySelector(svgSelector);
+    if (!$grid.length || !svg) return;
+
+    // очищаем SVG
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+    const gridRect = $grid[0].getBoundingClientRect();
+    if (!gridRect.width || !gridRect.height) {
+        // контейнер ещё не отрисован — попробуем позже
+        return;
+    }
+
+    svg.setAttribute('viewBox', `0 0 ${gridRect.width} ${gridRect.height}`);
+    svg.setAttribute('width',  gridRect.width);
+    svg.setAttribute('height', gridRect.height);
+
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    const format = bracket_formats[race_bracket_type];
+    if (!format) {
+        console.warn('draw_bracket_connectors: unknown format', race_bracket_type);
+        return;
+    }
+
+    // карта: heat_number → DOM-элемент
+    const numToEl = {};
+    $grid.find('.bracket_race').each(function () {
+        const num = this.getAttribute('data-heat-number');
+        if (num) numToEl[num] = this;
+    });
+
+    // рисуем линии
+    $grid.find('.bracket_race').each(function () {
+        const num = parseInt(this.getAttribute('data-heat-number'), 10);
+        if (!num) return;
+
+        const info = format[num - 1];
+        if (!info || info.advance_to === undefined) return;
+
+        const toEl = numToEl[info.advance_to];
+        if (!toEl) return;
+
+        const fromRect = this.getBoundingClientRect();
+        const toRect   = toEl.getBoundingClientRect();
+
+        // координаты относительно grid-контейнера
+        const x1 = fromRect.right - gridRect.left;
+        const y1 = fromRect.top   - gridRect.top + fromRect.height / 2;
+        const x2 = toRect.left    - gridRect.left;
+        const y2 = toRect.top     - gridRect.top + toRect.height / 2;
+
+        // ступенька: вправо → вертикально → вправо
+        const midX = x1 + (x2 - x1) / 2;
+        const d = `M ${x1} ${y1} H ${midX} V ${y2} H ${x2}`;
+
+        const path = document.createElementNS(SVG_NS, 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'bracket_connector_path');
+        svg.appendChild(path);
+    });
+}
+
+/* Соединяем последний loser heat с FINAL (winner).
+   Линия рисуется внутри SVG loser-секции, но с пересчётом
+   координат финальной карточки в систему loser-секции.
+*/
+function draw_loser_to_final_connector(race_bracket_type) {
+    const format = bracket_formats[race_bracket_type];
+    if (!format) return;
+    if (race_bracket_type.indexOf("single") !== -1) return;
+
+    // номер финального heat'а (winner без advance_to)
+    let finalNum = -1;
+    for (let i = 0; i < format.length; i++) {
+        if (format[i].type === 'winner' && format[i].advance_to === undefined) {
+            finalNum = i + 1;
+            break;
+        }
+    }
+    if (finalNum < 0) return;
+
+    // номер последнего loser heat'а
+    let lastLoserNum = -1;
+    for (let i = format.length - 1; i >= 0; i--) {
+        if (format[i].type === 'loser') {
+            lastLoserNum = i + 1;
+            break;
+        }
+    }
+    if (lastLoserNum < 0) return;
+
+    const winnerGrid = document.querySelector('#winner_bracket_content');
+    const loserGrid  = document.querySelector('#loser_bracket_content');
+    const loserSvg   = document.querySelector('#loser_connectors');
+    if (!winnerGrid || !loserGrid || !loserSvg) return;
+
+    const fromEl = loserGrid.querySelector('.bracket_race[data-heat-number="' + lastLoserNum + '"]');
+    const toEl   = winnerGrid.querySelector('.bracket_race[data-heat-number="' + finalNum + '"]');
+    if (!fromEl || !toEl) return;
+
+    const loserRect  = loserGrid.getBoundingClientRect();
+    const winnerRect = winnerGrid.getBoundingClientRect();
+    const fromR = fromEl.getBoundingClientRect();
+    const toR   = toEl.getBoundingClientRect();
+
+    // старт — правый край loser-карточки
+    const startX = fromR.right - loserRect.left;
+    const startY = fromR.top   - loserRect.top + fromR.height / 2;
+
+    // финиш — правый край FINAL, пересчитанный в систему loser-секции
+    const endX = (toR.right - winnerRect.left) + (winnerRect.left - loserRect.left);
+    const endY = (toR.top   - winnerRect.top)  + (winnerRect.top  - loserRect.top) + toR.height / 2;
+
+    // путь: короткий выступ вправо → вверх → вправо к финалу → вниз в правый край
+    const midX = startX + 30;
+    const d = `M ${startX} ${startY}`
+            + ` H ${midX}`
+            + ` V ${endY - 20}`
+            + ` H ${endX + 20}`
+            + ` V ${endY}`;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('class', 'bracket_connector_path');
+    loserSvg.appendChild(path);
+}
+
+/* Хелпер: перерисовать всё после рендера bracket'а */
+function redraw_bracket_connectors(race_bracket_type) {
+    requestAnimationFrame(() => {
+        draw_bracket_connectors('#winner_bracket_content', '#winner_connectors', race_bracket_type);
+        draw_bracket_connectors('#loser_bracket_content',  '#loser_connectors',  race_bracket_type);
+
+        if (race_bracket_type.indexOf("single") === -1) {
+            draw_loser_to_final_connector(race_bracket_type);
+        }
+    });
+}

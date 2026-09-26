@@ -96,6 +96,8 @@
             build_elimination_brackets('{{ bracket_type }}', '{{ class_id }}', ddr_pilot_data, ddr_heat_data, ddr_class_data, ddr_race_data);
             freq.updateBlocks();
             update_results_brackets(ddr_race_data);
+
+            //redraw_bracket_connectors('{{ bracket_type }}');
         });
 
         socket.on('pilot_data', function (msg) {
@@ -114,6 +116,8 @@
             build_elimination_brackets('{{ bracket_type }}', '{{ class_id }}', ddr_pilot_data, ddr_heat_data, ddr_class_data, ddr_race_data);
             freq.updateBlocks();
             update_results_brackets(ddr_race_data);
+
+            //redraw_bracket_connectors('{{ bracket_type }}');
         });
 
         socket.on('heartbeat', default_handler['heartbeat']);
@@ -139,65 +143,27 @@
 
         <div id="brackets" class="brackets-viewer">
 
-            <div class="bracket_group">
-                <div class="bracket_group_title">
-                    Winner Bracket
+            <div class="bracket_group bracket_group--winner">
+                <div class="bracket_group_title">Winner Bracket</div>
+
+                <div class="bracket_grid_wrap">
+                    <svg class="bracket_connectors" id="winner_connectors"></svg>
+                    <div id="winner_bracket_content" class="bracket_group_content"></div>
                 </div>
-
-                <div id="winner_bracket_content" class="bracket_group_content">
-
-                    <!--
-                    <div class="bracket_race">
-                        <div class="bracket_race_title">Race 1</div>
-                        <div class="bracket_race_pilots">
-
-                            <div class="bracket_race_pilot">
-                                <div class="avatar">
-                                    <img src="/ddr/static/assets/imgs/no_avatar.png">
-                                </div>
-
-                                <div class="flag">
-                                    <img src="/fpvscores/static/assets/imgs/flags/us.jpg" alt="USA">
-                                </div>
-
-                                <div class="pilot_name">
-                                    Pilot 1
-                                </div>
-                            </div>
-
-                            <div class="bracket_race_pilot">
-                                Pilot 2
-                            </div>
-                            <div class="bracket_race_pilot">
-                                Pilot 3
-                            </div>
-                            <div class="bracket_race_pilot">
-                                Pilot 4
-                            </div>
-
-                        </div>
-                    </div>
-                    -->
-
-                </div>
-
             </div>
 
-            <div class="bracket_group">
-                <div id="loser_bracket_title" class="bracket_group_title">
-                    Lower Bracket
-                </div>
+            <div class="bracket_group bracket_group--loser">
+                <div id="loser_bracket_title" class="bracket_group_title">Lower Bracket</div>
 
-                <div id="loser_bracket_content" class="bracket_group_content">
+                <div class="bracket_grid_wrap">
+                    <svg class="bracket_connectors" id="loser_connectors"></svg>
+                    <div id="loser_bracket_content" class="bracket_group_content"></div>
                 </div>
-
             </div>
 
         </div>
 
     </div>
-
-</div>
 
 </main>
 

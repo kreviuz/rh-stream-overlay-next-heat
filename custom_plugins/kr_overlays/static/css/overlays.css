@@ -1,63 +1,195 @@
-/* General */
+:root {
+    --bg: #000;
+    --race-num-bg: #3a3a3a;
+    --race-num-text: #ffffff;
+    --pilot-bg: #ffffff;
+    --pilot-text: #000;
+    --pilot-win: #7ee89a;      /* зелёный — 1st и 2nd */
+    --final-bg: #f5c542;       /* жёлтый финал */
+    --final-label-bg: #f5c542; /* плашка FINAL — тоже жёлтая */
+    --line-color: #7ee89a;     /* цвет пунктирных линий */
+    --label-color: #7ee89a;
 
-h1,
-h2,
-h3,
-h4,
-h5 {
+    --card-w: 240px;
+    --col-gap: 100px;
+    --row-gap: 30px;
+    --race-w: 26px;
 }
 
-#nextheat {
-    font-family: 'Teko', sans-serif;
-    background-color: #111111;
-    font-weight: 900;
-    border-radius: 25px 0 25px 0;
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    font-family: 'Teko', 'Arial Narrow', sans-serif;
     color: #fff;
-    font-size: 3rem;
-    padding: 20px;
+    overflow-x: auto;
+}
+
+.brackets-viewer {
+    padding: 24px 30px;
+    min-width: 1300px;
+}
+
+.bracket_section {
+    margin-bottom: 40px;
+}
+.bracket_section:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   ОБЁРТКА GRID + SVG-СЛОЙ ДЛЯ ЛИНИЙ
+   ============================================================ */
+.bracket_grid_wrap {
+    position: relative;
+}
+
+.bracket_grid {
+    display: grid;
+    grid-template-columns: repeat(4, var(--card-w));
+    column-gap: var(--col-gap);
+    row-gap: var(--row-gap);
+    align-items: start;
+    position: relative;
+    z-index: 1;
+}
+
+/* SVG-слой с линиями — под карточками */
+.bracket_connectors {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: visible;
+}
+
+/* ============================================================
+   ЗАГОЛОВОК СТАДИИ (рендерится из JS)
+   ============================================================ */
+.bracket_stage_label {
+    color: var(--label-color);
+    font-size: 26px;
+    font-style: italic;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1;
+    padding-left: var(--race-w);
+    align-self: end;
+    grid-column: var(--col);
+    grid-row: var(--row);
+}
+
+/* ============================================================
+   КАРТОЧКА ГОНКИ
+   ============================================================ */
+.bracket_race {
+    display: flex;
+    align-items: stretch;
+    position: relative;
+    grid-column: var(--col);
+    grid-row: var(--row);
+}
+
+/* вертикальная плашка "RACE N" */
+.bracket_race::before {
+    content: attr(data-race-label);
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    background: var(--race-num-bg);
+    color: var(--race-num-text);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    padding: 2px 0;
+    width: var(--race-w);
+    flex-shrink: 0;
 }
 
-#nextheat #nextheat_title {
-    /*color: #013e77;*/
-    display: inline;
-    text-align: center;
-    text-transform: uppercase;
+/* ФИНАЛ — плашка жёлтая */
+.bracket_race.is-final::before {
+    background: var(--final-label-bg);
+    color: #000;
 }
 
-#nextheat .nextheat_name {
-    display: inline;
+.bracket_race_title { display: none; }
+
+/* ============================================================
+   ПИЛОТЫ
+   ============================================================ */
+.bracket_race_pilots {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
 }
 
-#nextheat .curr_heat_title {
-    font-family: teko, Arial, Helvetica, sans-serif;
+.bracket_race_pilot {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 3px 10px;
+    min-height: 30px;
+    font-size: 20px;
     font-weight: 600;
+    color: var(--pilot-text);
+    background: var(--pilot-bg);
+    border-bottom: 1px solid #d0d0d0;
+    line-height: 1.1;
+}
+
+.bracket_race_pilot:last-child { border-bottom: none; }
+
+/* 1st и 2nd — зелёный фон */
+.bracket_race_pilot:nth-child(1),
+.bracket_race_pilot:nth-child(2) {
+    background: var(--pilot-win);
+}
+
+/* финал — жёлтый */
+.bracket_race.is-final .bracket_race_pilot {
+    background: var(--final-bg);
+}
+
+.pilot_name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pilot_position {
+    font-size: 15px;
+    font-weight: 700;
+    text-align: right;
+    min-width: 38px;
     text-transform: uppercase;
-    display: inline;
+    letter-spacing: 0.5px;
 }
 
-#nextheat .curr_event_name {
-    display: inline;
-}
-.nextheat_pilot_box{
-    display: inline;
-    margin: 0 auto;
-    padding-bottom: 50px;
+.no_pilot {
+    font-style: italic;
+    color: #666;
+    font-size: 18px;
 }
 
-.nextheat_pilot {
-    display: inline;
-}
+.channel-block { display: none; }
 
-.nextheat_pilot_name {
-    display: inline;
-}
-
-.nextheat_pilot_name {
-    display: inline;
-    padding-right: 10px;
-}
-
-.channel-block {
-    display: inline;
+/* ============================================================
+   ПУНКТИРНЫЕ ЛИНИИ
+   ============================================================ */
+.bracket_connector_path {
+    fill: none;
+    stroke: var(--line-color);
+    stroke-width: 2;
+    stroke-dasharray: 3 4;
+    stroke-linecap: round;
+    opacity: 0.9;
 }
